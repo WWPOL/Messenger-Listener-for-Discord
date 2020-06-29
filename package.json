@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/WWPOL/Messenger-Listener-for-Discord#readme",
   "dependencies": {
+    "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "facebook-chat-api": "^1.8.0",
     "minimist": "^1.2.5"

@@ -2,7 +2,25 @@ require("dotenv").config();
 const fs = require("fs");
 const login = require("facebook-chat-api");
 const readline = require("readline");
+const Discord = require("discord.js");
+
 const argv = require("minimist")(process.argv.slice(2));
+const client = new Discord.Client();
+client.login(process.env.DISCORD_TOKEN);
+
+const sendMessage = msg => {
+  const channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);
+  switch (msg.type) {
+    case "message":
+      channel.send(`${msg.sender} said:\n${msg.body}\n`);
+      break;
+    case "message_reply":
+      channel.send(
+        `> ${msg.replySender} said "${msg.replyBody}"\n${msg.sender} replied:\n${msg.body}\n`
+      );
+      break;
+  }
+};
 
 if (argv.login) {
   const rl = readline.createInterface({
@@ -47,21 +65,37 @@ if (argv.login) {
 
       api.listenMqtt((err, event) => {
         if (err) return console.error(err);
-        //if (event.threadID !== process.env.CHAT_ID) return;
+        if (event.threadID !== process.env.FB_CHAT_ID) return;
 
-        if (event.type === "message" || event.type === "message_reply") {
-          api.getUserInfo(event.senderID, (err, ret) => {
-            if (err) return console.error(err);
-            let msg = {
-              type: event.type,
-              sender: ret[event.senderID].name,
-              body: event.body
-            };
+        switch (event.type) {
+          case "message":
+            api.getUserInfo(event.senderID, (err, ret) => {
+              if (err) return console.error(err);
+              if (event.body === "") return;
 
-            if (event.messageReply) {
-              msg.replyTo = event.messageReply.body;
-            }
-          });
+              sendMessage({
+                type: event.type,
+                sender: ret[event.senderID].name,
+                body: event.body
+              });
+            });
+            break;
+          case "message_reply":
+            api.getUserInfo(
+              [event.senderID, event.messageReply.senderID],
+              (err, ret) => {
+                if (err) return console.error(err);
+
+                sendMessage({
+                  type: event.type,
+                  sender: ret[event.senderID].name,
+                  body: event.body,
+                  replySender: ret[event.messageReply.senderID].name,
+                  replyBody: event.messageReply.body
+                });
+              }
+            );
+            break;
         }
       });
     }
