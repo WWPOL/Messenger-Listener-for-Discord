@@ -1,0 +1,27 @@
+{
+  "name": "messenger-listener-for-discord",
+  "version": "1.0.0",
+  "description": "Listens to a FB Messenger chat and echos messages into a Discord channel",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,json,md}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WWPOL/Messenger-Listener-for-Discord.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WWPOL/Messenger-Listener-for-Discord/issues"
+  },
+  "homepage": "https://github.com/WWPOL/Messenger-Listener-for-Discord#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "facebook-chat-api": "^1.8.0",
+    "minimist": "^1.2.5"
+  },
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  }
+}
